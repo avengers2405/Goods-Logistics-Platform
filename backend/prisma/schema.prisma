@@ -70,8 +70,8 @@ model Vehicle {
   id            String      @id @default(cuid())
   liscencePlate String      @unique
   type          VehicleType
-  driverId      String?      @unique
-  driver        Driver?      @relation(fields: [driverId], references: [id])
+  driverId      String?     @unique
+  driver        Driver?     @relation(fields: [driverId], references: [id])
 }
 
 model Booking {

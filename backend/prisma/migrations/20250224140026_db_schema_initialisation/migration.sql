@@ -140,27 +140,3 @@ ALTER TABLE "LiveLocation" ADD CONSTRAINT "LiveLocation_driverId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "LocationHistory" ADD CONSTRAINT "LocationHistory_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- Enable PostGIS extension
-CREATE EXTENSION IF NOT EXISTS postgis;
-
--- Add a geography column to the LiveLocation table
-ALTER TABLE "LiveLocation" ADD COLUMN geom geography(POINT, 4326);
-
--- Create a function to automatically update the geom column
-CREATE OR REPLACE FUNCTION update_geom()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.geom = ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326)::geography;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create a trigger to maintain the geom column
-CREATE TRIGGER update_live_location_geom
-BEFORE INSERT OR UPDATE ON "LiveLocation"
-FOR EACH ROW
-EXECUTE FUNCTION update_geom();
-
--- Create a spatial index on the geom column
-CREATE INDEX live_location_geom_idx ON "LiveLocation" USING GIST(geom);

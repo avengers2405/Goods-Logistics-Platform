@@ -15,7 +15,7 @@ model User {
   clerkId   String    @unique
   phone     String
   createdAt DateTime  @default(now())
-  credits   Int
+  credits   Int       @default(0)
   addresses Address[]
   bookings  Booking[]
 }

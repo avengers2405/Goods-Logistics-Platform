@@ -40,14 +40,14 @@ model Driver {
   email           String
   clerkId         String            @unique
   phone           String
-  vehicleId       String
-  rating          Float
-  adminId         String
+  vehicleId       String?           @unique
+  rating          Float             @default(5)
+  adminId         String?
   bookings        Booking[]
-  admin           Admin             @relation(fields: [adminId], references: [id])
+  admin           Admin?             @relation(fields: [adminId], references: [id])
   liveLocation    LiveLocation?
   locationHistory LocationHistory[]
-  vehicle         Vehicle?
+  vehicle         Vehicle?          @relation(fields: [vehicleId], references: [id])
 }
 
 model Admin {
@@ -64,8 +64,7 @@ model Vehicle {
   id            String      @id @default(cuid())
   liscencePlate String      @unique
   type          VehicleType
-  driverId      String?     @unique
-  driver        Driver?     @relation(fields: [driverId], references: [id])
+  driver        Driver?
 }
 
 model Booking {

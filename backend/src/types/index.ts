@@ -45,3 +45,7 @@ export const CreateBookingSchema = z.object({
   price: z.number().min(0, "Price must be a positive number")
 });
 
+export const GetAllBookingsQuerySchema = z.object ({
+  limit: z.coerce.number().default(10),
+  offset: z.coerce.number().default(0)
+})

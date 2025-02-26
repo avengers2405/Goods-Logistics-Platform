@@ -3,7 +3,8 @@ import { GET, POST } from "../decorator/router";
 import { APIResponse } from "../interface/api";
 import BookingRepository from "../repository/booking.repo";
 import { HTTPStatus } from "../constant";
-import { CreateBookingSchema } from "../types";
+import { CreateBookingSchema, GetAllBookingsQuerySchema } from "../types";
+import { parse } from "path";
 
 export default class BookingController {
   private bookingRepository: BookingRepository;
@@ -52,7 +53,7 @@ export default class BookingController {
     }
   }
 
-  @GET("/api/v1/booking:bookingId")
+  @GET("/api/v1/booking/:bookingId")
   public async getBookingData(
     req: Request,
     res: Response
@@ -86,6 +87,86 @@ export default class BookingController {
       return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
         status: false,
         message: "Failed to retrieve booking data",
+      });
+    }
+  }
+
+  @GET("/api/v1/booking/driver/:driverId")
+  public async getBookingsByDriver(
+    req: Request,
+    res: Response
+  ): Promise<Response<APIResponse>> {
+    try {
+      const { driverId } = req.params;
+      const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
+      const limit = parsedQueryParams.success ? parsedQueryParams.data.limit : 50;
+      const offset = parsedQueryParams.success ? parsedQueryParams.data.offset : 0;
+
+      if (!driverId){
+        return res.status(HTTPStatus.BAD_REQUEST).json({
+          status: false,
+          message: "driverId is required",
+        });
+      }
+
+      const bookingsData = await this.bookingRepository.getDriverBookings(driverId, limit, offset);
+      if (!bookingsData){
+        return res.status(HTTPStatus.NOT_FOUND).json({
+          status: false,
+          message: "Bookings could not be fetched.",
+        });
+      }
+
+      return res.status(HTTPStatus.OK).json({
+        status: true,
+        message: "Booking data retrieved successfully",
+        data: bookingsData,
+      });
+    } catch (error) {
+      console.error("Error retrieving bookings:", error);
+      return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: "Failed to retrieve bookings data",
+      });
+    }
+  }
+
+  @GET("/api/v1/booking/user/:userId")
+  public async getBookingsByUser(
+    req: Request,
+    res: Response
+  ): Promise<Response<APIResponse>> {
+    try{
+      const { userId } = req.params;
+      const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
+      const limit = parsedQueryParams.success ? parsedQueryParams.data.limit : 50;
+      const offset = parsedQueryParams.success ? parsedQueryParams.data.offset : 0;
+
+      if (!userId){
+        return res.status(HTTPStatus.BAD_REQUEST).json({
+          status: false,
+          message: "userId is required",
+        });
+      }
+
+      const bookingsData = await this.bookingRepository.getUserBookings(userId, limit, offset);
+      if (!bookingsData){
+        return res.status(HTTPStatus.NOT_FOUND).json({
+          status: false,
+          message: "Bookings could not be fetched.",
+        });
+      }
+
+      return res.status(HTTPStatus.OK).json({
+        status: true,
+        message: "Booking data retrieved successfully",
+        data: bookingsData,
+      });
+    } catch (error) {
+      console.error("Error retrieving bookings:", error);
+      return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
+        status: false,
+        message: "Failed to retrieve bookings data",
       });
     }
   }

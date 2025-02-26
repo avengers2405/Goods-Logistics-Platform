@@ -52,7 +52,7 @@ export default class UserController {
     }
   }
 
-  @GET("/api/v1/user:userId")
+  @GET("/api/v1/user/:userId")
   public async getUserData(
     req: Request,
     res: Response

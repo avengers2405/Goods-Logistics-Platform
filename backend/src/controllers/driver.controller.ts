@@ -52,7 +52,7 @@ export default class DriverClass {
     }
   }
 
-  @GET("/api/v1/driver:driverId")
+  @GET("/api/v1/driver/:driverId")
   public async getDriverData(
     req: Request,
     res: Response

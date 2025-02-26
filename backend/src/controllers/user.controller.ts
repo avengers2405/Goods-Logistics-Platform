@@ -3,6 +3,7 @@ import { GET, POST } from "../decorator/router";
 import { APIResponse } from "../interface/api";
 import UserRepository from "../repository/user.repo";
 import { HTTPStatus } from "../constant";
+import { CreateUserSchema } from "../types";
 
 export default class UserController {
   private userRepository: UserRepository;
@@ -24,7 +25,19 @@ export default class UserController {
         });
       }
 
-      const createUserData = this.userRepository.create(req.body);
+      const parsedData = CreateUserSchema.safeParse(req.body);
+      if (!parsedData.success) {
+        return res.status(HTTPStatus.BAD_REQUEST).json({
+          status: false,
+          message: "Invalid input data",
+          error: parsedData.error.errors.map((e) => ({
+            field: e.path.join("."),
+            message: e.message,
+          })),
+        });
+      }
+
+      const createUserData = this.userRepository.create(parsedData);
       return res.status(HTTPStatus.CREATED).json({
         status: true,
         message: "User created successfully",

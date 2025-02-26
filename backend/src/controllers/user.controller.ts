@@ -52,21 +52,21 @@ export default class UserController {
     }
   }
 
-  @GET("/api/v1/user:clerkUserId")
+  @GET("/api/v1/user:userId")
   public async getUserData(
     req: Request,
     res: Response
   ): Promise<Response<APIResponse>> {
     try {
-      const { clerkUserId } = req.params;
-      if (!clerkUserId) {
+      const { userId } = req.params;
+      if (!userId) {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
-          message: "clerkUserId is required",
+          message: "userId is required",
         });
       }
-      const userData = await this.userRepository.getUserByClerkUserId(
-        clerkUserId as string
+      const userData = await this.userRepository.get(
+        userId as string
       );
       if (!userData) {
         return res.status(HTTPStatus.NOT_FOUND).json({

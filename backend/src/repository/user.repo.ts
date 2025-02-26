@@ -24,26 +24,4 @@ export default class UserRepository extends Repository<User> {
 
     return userData;
   }
-
-  public async getUserByClerkUserId(clerkUserId: string) {
-    const userData = await this.model.findFirst({
-      where: {
-        clerkId: clerkUserId,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        clerkId: true,
-        phone: true,
-        createdAt: true,
-        credits: true,
-        addresses: true,
-        bookings: true,
-      },
-    });
-
-    return userData;
-  }
 }

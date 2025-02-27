@@ -28,24 +28,25 @@ export const CreateDriverSchema = z.object({
   clerkId: z.string(),
 });
 
-const VehicleTypeEnum = z.enum(['SMALL', 'MEDIUM', 'LARGE', 'TRUCK']);
+const VehicleTypeEnum = z.enum(["SMALL", "MEDIUM", "LARGE", "TRUCK"]);
 const licenseRegex = /^[A-Z]{2}-\d{2}-[A-Z]{2}-\d{1,4}$/;
 
 export const CreateVehicleSchema = z.object({
   liscencePlate: z
     .string()
     .toUpperCase() // Convert to uppercase for consistency
-    .refine(val => licenseRegex.test(val), {
-      message: 'Invalid license plate format. Expected format: XX-XX-XX-XXXX (e.g., MH-14-ER-3829)'
+    .refine((val) => licenseRegex.test(val), {
+      message:
+        "Invalid license plate format. Expected format: XX-XX-XX-XXXX (e.g., MH-14-ER-3829)",
     }),
-  type: VehicleTypeEnum
+  type: VehicleTypeEnum,
 });
 
 export const CreateBookingSchema = z.object({
-  price: z.number().min(0, "Price must be a positive number")
+  price: z.number().min(0, "Price must be a positive number"),
 });
 
-export const GetAllBookingsQuerySchema = z.object ({
+export const GetAllBookingsQuerySchema = z.object({
   limit: z.coerce.number().default(10),
-  offset: z.coerce.number().default(0)
-})
+  offset: z.coerce.number().default(0),
+});

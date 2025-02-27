@@ -65,9 +65,7 @@ export default class UserController {
           message: "userId is required",
         });
       }
-      const userData = await this.userRepository.get(
-        userId as string
-      );
+      const userData = await this.userRepository.get(userId as string);
       if (!userData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,

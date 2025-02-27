@@ -13,28 +13,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_repo_1 = __importDefault(require("./base.repo"));
-class UserRepository extends base_repo_1.default {
+class DriverRepository extends base_repo_1.default {
     constructor() {
-        super("user");
+        super("driver");
     }
-    getUserEmail(email) {
+    getDriverByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userData = yield this.model.findFirst({
+            return yield this.model.findFirst({
                 where: {
                     email,
                 },
                 select: {
                     id: true,
-                    email: true,
                     firstName: true,
                     lastName: true,
                     clerkId: true,
-                    phone: true,
-                    address: true,
                 },
             });
-            return userData;
+        });
+    }
+    updateDriverDetails(driverId, firstName, lastName, email, phone, vehicleId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.model.update({
+                where: {
+                    id: driverId,
+                },
+                data: {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phone: phone,
+                    vehicleId: vehicleId,
+                },
+            });
         });
     }
 }
-exports.default = UserRepository;
+exports.default = DriverRepository;

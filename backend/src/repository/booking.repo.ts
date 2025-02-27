@@ -3,7 +3,7 @@ import Repository from "./base.repo";
 
 export default class BookingRepository extends Repository<Booking> {
   constructor() {
-    super("Booking");
+    super("booking");
   }
 
   public async getDriverBookings(driverId: string, limit: number, offset: number) {

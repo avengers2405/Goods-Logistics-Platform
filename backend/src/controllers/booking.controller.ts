@@ -13,7 +13,7 @@ export default class BookingController {
     this.bookingRepository = new BookingRepository();
   }
 
-  @POST('api/v1/booking')
+  @POST("api/v1/booking")
   public async createBooking(
     req: Request,
     res: Response
@@ -59,18 +59,16 @@ export default class BookingController {
     res: Response
   ): Promise<Response<APIResponse>> {
     try {
-      const {bookingId} = req.params;
-      if (!bookingId){
+      const { bookingId } = req.params;
+      if (!bookingId) {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
           message: "bookingId is required",
         });
       }
 
-      const bookingData = await this.bookingRepository.get(
-        bookingId as string
-      )
-      if (!bookingData){
+      const bookingData = await this.bookingRepository.get(bookingId as string);
+      if (!bookingData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,
           message: "Booking not found",
@@ -99,18 +97,26 @@ export default class BookingController {
     try {
       const { driverId } = req.params;
       const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
-      const limit = parsedQueryParams.success ? parsedQueryParams.data.limit : 50;
-      const offset = parsedQueryParams.success ? parsedQueryParams.data.offset : 0;
+      const limit = parsedQueryParams.success
+        ? parsedQueryParams.data.limit
+        : 50;
+      const offset = parsedQueryParams.success
+        ? parsedQueryParams.data.offset
+        : 0;
 
-      if (!driverId){
+      if (!driverId) {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
           message: "driverId is required",
         });
       }
 
-      const bookingsData = await this.bookingRepository.getDriverBookings(driverId, limit, offset);
-      if (!bookingsData){
+      const bookingsData = await this.bookingRepository.getDriverBookings(
+        driverId,
+        limit,
+        offset
+      );
+      if (!bookingsData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,
           message: "Bookings could not be fetched.",
@@ -136,21 +142,29 @@ export default class BookingController {
     req: Request,
     res: Response
   ): Promise<Response<APIResponse>> {
-    try{
+    try {
       const { userId } = req.params;
       const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
-      const limit = parsedQueryParams.success ? parsedQueryParams.data.limit : 50;
-      const offset = parsedQueryParams.success ? parsedQueryParams.data.offset : 0;
+      const limit = parsedQueryParams.success
+        ? parsedQueryParams.data.limit
+        : 50;
+      const offset = parsedQueryParams.success
+        ? parsedQueryParams.data.offset
+        : 0;
 
-      if (!userId){
+      if (!userId) {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
           message: "userId is required",
         });
       }
 
-      const bookingsData = await this.bookingRepository.getUserBookings(userId, limit, offset);
-      if (!bookingsData){
+      const bookingsData = await this.bookingRepository.getUserBookings(
+        userId,
+        limit,
+        offset
+      );
+      if (!bookingsData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,
           message: "Bookings could not be fetched.",

@@ -22,14 +22,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const router_1 = require("../decorator/router");
-const user_repo_1 = __importDefault(require("../repository/user.repo"));
+const driver_repo_1 = __importDefault(require("../repository/driver.repo"));
 const constant_1 = require("../constant");
 const types_1 = require("../types");
-class UserController {
+class DriverClass {
     constructor() {
-        this.userRepository = new user_repo_1.default();
+        this.driverRepository = new driver_repo_1.default();
     }
-    createUser(req, res) {
+    createDriver(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (!req.body || Object.keys(req.body).length === 0) {
@@ -38,7 +38,7 @@ class UserController {
                         message: "Request body is empty",
                     });
                 }
-                const parsedData = types_1.CreateUserSchema.safeParse(req.body);
+                const parsedData = types_1.CreateDriverSchema.safeParse(req.body);
                 if (!parsedData.success) {
                     return res.status(constant_1.HTTPStatus.BAD_REQUEST).json({
                         status: false,
@@ -49,65 +49,65 @@ class UserController {
                         })),
                     });
                 }
-                const createUserData = this.userRepository.create(parsedData);
+                const createDriverData = this.driverRepository.create(parsedData);
                 return res.status(constant_1.HTTPStatus.CREATED).json({
                     status: true,
-                    message: "User created successfully",
-                    data: createUserData,
+                    message: "Driver created successfully",
+                    data: createDriverData,
                 });
             }
             catch (error) {
-                console.error("Error saving user:", error);
+                console.error("Error saving driver:", error);
                 return res.status(constant_1.HTTPStatus.INTERNAL_SERVER_ERROR).json({
                     status: false,
-                    message: "Failed to saving user data",
+                    message: "Failed to saving driver data",
                 });
             }
         });
     }
-    getUserData(req, res) {
+    getDriverData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { userId } = req.params;
-                if (!userId) {
+                const { driverId } = req.params;
+                if (!driverId) {
                     return res.status(constant_1.HTTPStatus.BAD_REQUEST).json({
                         status: false,
-                        message: "userId is required",
+                        message: "driverId is required",
                     });
                 }
-                const userData = yield this.userRepository.get(userId);
-                if (!userData) {
+                const driverData = yield this.driverRepository.get(driverId);
+                if (!driverData) {
                     return res.status(constant_1.HTTPStatus.NOT_FOUND).json({
                         status: false,
-                        message: "User not found",
+                        message: "Driver not found",
                     });
                 }
                 return res.status(constant_1.HTTPStatus.OK).json({
                     status: true,
-                    message: "User data retrieved successfully",
-                    data: userData,
+                    message: "Driver data retrieved successfully",
+                    data: driverData,
                 });
             }
             catch (error) {
-                console.error("Error retrieving user:", error);
+                console.error("Error retrieving driver:", error);
                 return res.status(constant_1.HTTPStatus.INTERNAL_SERVER_ERROR).json({
                     status: false,
-                    message: "Failed to retrieve user data",
+                    message: "Failed to retrieve driver data",
                 });
             }
         });
     }
 }
-exports.default = UserController;
+exports.default = DriverClass;
 __decorate([
-    (0, router_1.POST)("/api/v1/user"),
+    (0, router_1.POST)("/api/v1/driver"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "createUser", null);
+], DriverClass.prototype, "createDriver", null);
 __decorate([
-    (0, router_1.GET)("/api/v1/user/:userId"),
+    (0, router_1.GET)("/api/v1/driver/:driverId"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "getUserData", null);
+], DriverClass.prototype, "getDriverData", null);

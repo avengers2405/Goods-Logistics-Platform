@@ -15,7 +15,7 @@ export default class DriverClass {
   @POST("/api/v1/driver")
   public async createDriver(
     req: Request,
-    res: Response,
+    res: Response
   ): Promise<Response<APIResponse>> {
     try {
       if (!req.body || Object.keys(req.body).length === 0) {
@@ -65,9 +65,7 @@ export default class DriverClass {
           message: "driverId is required",
         });
       }
-      const driverData = await this.driverRepository.get(
-        driverId as string
-      );
+      const driverData = await this.driverRepository.get(driverId as string);
       if (!driverData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,

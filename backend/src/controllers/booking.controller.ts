@@ -89,13 +89,14 @@ export default class BookingController {
     }
   }
 
-  @GET("/api/v1/booking/driver/:driverId")
-  public async getBookingsByDriver(
+  // here type can be either "user" or "driver"
+  @GET("/api/v1/booking/:type/:id")
+  public async getBookings(
     req: Request,
     res: Response
   ): Promise<Response<APIResponse>> {
     try {
-      const { driverId } = req.params;
+      const { type, id } = req.params;
       const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
       const limit = parsedQueryParams.success
         ? parsedQueryParams.data.limit
@@ -104,66 +105,35 @@ export default class BookingController {
         ? parsedQueryParams.data.offset
         : 0;
 
-      if (!driverId) {
+      if (type !== "user" && type !== "driver") {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
-          message: "driverId is required",
+          message: "Type must be either 'user' or 'driver'",
         });
       }
 
-      const bookingsData = await this.bookingRepository.getDriverBookings(
-        driverId,
-        limit,
-        offset
-      );
-      if (!bookingsData) {
-        return res.status(HTTPStatus.NOT_FOUND).json({
-          status: false,
-          message: "Bookings could not be fetched.",
-        });
-      }
-
-      return res.status(HTTPStatus.OK).json({
-        status: true,
-        message: "Booking data retrieved successfully",
-        data: bookingsData,
-      });
-    } catch (error) {
-      console.error("Error retrieving bookings:", error);
-      return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: "Failed to retrieve bookings data",
-      });
-    }
-  }
-
-  @GET("/api/v1/booking/user/:userId")
-  public async getBookingsByUser(
-    req: Request,
-    res: Response
-  ): Promise<Response<APIResponse>> {
-    try {
-      const { userId } = req.params;
-      const parsedQueryParams = GetAllBookingsQuerySchema.safeParse(req.query);
-      const limit = parsedQueryParams.success
-        ? parsedQueryParams.data.limit
-        : 50;
-      const offset = parsedQueryParams.success
-        ? parsedQueryParams.data.offset
-        : 0;
-
-      if (!userId) {
+      if (!id) {
         return res.status(HTTPStatus.BAD_REQUEST).json({
           status: false,
-          message: "userId is required",
+          message: `${type === "user" ? "userId" : "driverId"} is required`,
         });
       }
 
-      const bookingsData = await this.bookingRepository.getUserBookings(
-        userId,
-        limit,
-        offset
-      );
+      let bookingsData;
+      if (type === "user") {
+        bookingsData = await this.bookingRepository.getUserBookings(
+          id,
+          limit,
+          offset
+        );
+      } else {
+        bookingsData = await this.bookingRepository.getDriverBookings(
+          id,
+          limit,
+          offset
+        );
+      }
+
       if (!bookingsData) {
         return res.status(HTTPStatus.NOT_FOUND).json({
           status: false,

@@ -97,10 +97,11 @@ class BookingController {
             }
         });
     }
-    getBookingsByDriver(req, res) {
+    // here type can be either "user" or "driver"
+    getBookings(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { driverId } = req.params;
+                const { type, id } = req.params;
                 const parsedQueryParams = types_1.GetAllBookingsQuerySchema.safeParse(req.query);
                 const limit = parsedQueryParams.success
                     ? parsedQueryParams.data.limit
@@ -108,52 +109,25 @@ class BookingController {
                 const offset = parsedQueryParams.success
                     ? parsedQueryParams.data.offset
                     : 0;
-                if (!driverId) {
+                if (type !== "user" && type !== "driver") {
                     return res.status(constant_1.HTTPStatus.BAD_REQUEST).json({
                         status: false,
-                        message: "driverId is required",
+                        message: "Type must be either 'user' or 'driver'",
                     });
                 }
-                const bookingsData = yield this.bookingRepository.getDriverBookings(driverId, limit, offset);
-                if (!bookingsData) {
-                    return res.status(constant_1.HTTPStatus.NOT_FOUND).json({
-                        status: false,
-                        message: "Bookings could not be fetched.",
-                    });
-                }
-                return res.status(constant_1.HTTPStatus.OK).json({
-                    status: true,
-                    message: "Booking data retrieved successfully",
-                    data: bookingsData,
-                });
-            }
-            catch (error) {
-                console.error("Error retrieving bookings:", error);
-                return res.status(constant_1.HTTPStatus.INTERNAL_SERVER_ERROR).json({
-                    status: false,
-                    message: "Failed to retrieve bookings data",
-                });
-            }
-        });
-    }
-    getBookingsByUser(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { userId } = req.params;
-                const parsedQueryParams = types_1.GetAllBookingsQuerySchema.safeParse(req.query);
-                const limit = parsedQueryParams.success
-                    ? parsedQueryParams.data.limit
-                    : 50;
-                const offset = parsedQueryParams.success
-                    ? parsedQueryParams.data.offset
-                    : 0;
-                if (!userId) {
+                if (!id) {
                     return res.status(constant_1.HTTPStatus.BAD_REQUEST).json({
                         status: false,
-                        message: "userId is required",
+                        message: `${type === "user" ? "userId" : "driverId"} is required`,
                     });
                 }
-                const bookingsData = yield this.bookingRepository.getUserBookings(userId, limit, offset);
+                let bookingsData;
+                if (type === "user") {
+                    bookingsData = yield this.bookingRepository.getUserBookings(id, limit, offset);
+                }
+                else {
+                    bookingsData = yield this.bookingRepository.getDriverBookings(id, limit, offset);
+                }
                 if (!bookingsData) {
                     return res.status(constant_1.HTTPStatus.NOT_FOUND).json({
                         status: false,
@@ -190,14 +164,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "getBookingData", null);
 __decorate([
-    (0, router_1.GET)("/api/v1/booking/driver/:driverId"),
+    (0, router_1.GET)("/api/v1/booking/:type/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], BookingController.prototype, "getBookingsByDriver", null);
-__decorate([
-    (0, router_1.GET)("/api/v1/booking/user/:userId"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], BookingController.prototype, "getBookingsByUser", null);
+], BookingController.prototype, "getBookings", null);
